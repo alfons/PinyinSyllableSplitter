@@ -61,6 +61,7 @@ wèi∙shén∙me
 ---
 
 ## Split and Tag
+PinyinSyllableSplitter follows rakutenMA (a morphological analyzer) conventions for Chinese, using language-agnostic POS tags, here PU (punctuation) and X (other).
 
 ```javascript
 const splitter = new PinyinSyllableSplitter();
@@ -70,27 +71,27 @@ splitter.splitAndTag(text);
 **Output:**
 ```json
 [
-  { "segment": "Rán", "type": "X" },
-  { "segment": "'", "type": "PU" },
-  { "segment": "ér", "type": "X" },
-  { "segment": ",", "type": "PU" },
-  { "segment": " ", "type": "PU" },
-  { "segment": "tā", "type": "X" },
-  { "segment": " ", "type": "PU" },
-  { "segment": "yǒu", "type": "X" },
-  { "segment": "diǎn", "type": "X" },
-  { "segment": " ", "type": "PU" },
-  { "segment": "bù", "type": "X" },
-  { "segment": "yóu", "type": "X" },
-  { "segment": "-", "type": "PU" },
-  { "segment": "zì", "type": "X" },
-  { "segment": "zhǔ", "type": "X" },
-  { "segment": " ", "type": "PU" },
-  { "segment": "zài", "type": "X" },
-  { "segment": " ", "type": "PU" },
-  { "segment": "fā", "type": "X" },
-  { "segment": "dǒu", "type": "X" },
-  { "segment": ".", "type": "PU" }
+  { "syllable": "Rán", "tag": "X" },
+  { "syllable": "'", "tag": "PU" },
+  { "syllable": "ér", "tag": "X" },
+  { "syllable": ",", "tag": "PU" },
+  { "syllable": " ", "tag": "PU" },
+  { "syllable": "tā", "tag": "X" },
+  { "syllable": " ", "tag": "PU" },
+  { "syllable": "yǒu", "tag": "X" },
+  { "syllable": "diǎn", "tag": "X" },
+  { "syllable": " ", "tag": "PU" },
+  { "syllable": "bù", "tag": "X" },
+  { "syllable": "yóu", "tag": "X" },
+  { "syllable": "-", "tag": "PU" },
+  { "syllable": "zì", "tag": "X" },
+  { "syllable": "zhǔ", "tag": "X" },
+  { "syllable": " ", "tag": "PU" },
+  { "syllable": "zài", "tag": "X" },
+  { "syllable": " ", "tag": "PU" },
+  { "syllable": "fā", "tag": "X" },
+  { "syllable": "dǒu", "tag": "X" },
+  { "syllable": ".", "tag": "PU" }
 ]
 ```
 
