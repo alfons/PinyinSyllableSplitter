@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PinyinSyllableSplitter Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            line-height: 1.6;
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 0.3em;
+        }
+
+        h2 {
+            margin-top: 2rem;
+            color: #34495e;
+        }
+
+        h3 {
+            margin-top: 1rem;
+            color: #555;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 8px 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: Consolas, monospace;
+            font-size: 0.9rem;
+        }
+
+        .operation {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .code-block {
+            margin-bottom: 1rem;
+        }
+
+        strong {
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+    </style>
+    <script src="./PinyinSyllableSplitter.js"></script>
+</head>
+
+<body>
+    <h1>PinyinSyllableSplitter Demo</h1>
+    <p>A JavaScript class to split Hànyǔ Pīnyīn text into syllables, by Alfons Grabher.
+
+        Licensed under the MIT License.</p>
+    <h2>Example Text</h2>
+    <pre>Rán'ér, tā yǒudiǎn bùyóu-zìzhǔ zài fādǒu.</pre>
+
+    <h2>Usage and Output</h2>
+
+    <div class="operation">
+        <h3>Split to Syllables</h3>
+        <div class="code-block">
+            <pre>const splitter = new PinyinSyllableSplitter();
+splitter.splitWords(text);</pre>
+        </div>
+        <strong>Output:</strong>
+        <pre id="syllables-default"></pre>
+    </div>
+
+    <div class="operation">
+        <h3>Split to Syllables with Custom Spacing Character</h3>
+        <div class="code-block">
+            <pre>const splitter = new PinyinSyllableSplitter(" ");
+splitter.splitWords(text);</pre>
+        </div>
+        <div class="code-block">
+            <pre>const splitter = new PinyinSyllableSplitter;
+splitter.setSpacingChar(" ");
+splitter.splitWords(text);</pre>
+        </div>
+        <strong>Output:</strong>
+        <pre id="syllables-space"></pre>
+    </div>
+
+    <div class="operation">
+        <h3>Split one word into syllables</h3>
+        <div class="code-block">
+            <pre>const splitter = new PinyinSyllableSplitter();
+splitter.splitWords("wèishénme");</pre>
+        </div>
+        <strong>Output:</strong>
+        <pre id="syllables-word"></pre>
+    </div>
+
+    <div class="operation">
+        <h3>Split and Tag</h3>
+        <div class="code-block">
+            <pre>const splitter = new PinyinSyllableSplitter();
+splitter.splitAndTag(text);</pre>
+        </div>
+        <strong>Output:</strong>
+        <pre id="morphemes"></pre>
+    </div>
+
+    <div class="operation">
+        <h3>Split into a list of syllables</h3>
+        <div class="code-block">
+            <pre>const splitter = new PinyinSyllableSplitter();
+splitter.listSyllables(text);</pre>
+        </div>
+        <strong>Output:</strong>
+        <pre id="pinyinSyllables"></pre>
+    </div>
+
+    <script type="module">
+        const text = "Rán'ér, tā yǒudiǎn bùyóu-zìzhǔ zài fādǒu.";
+
+        // Example 1: spacing character = space
+        const splitterSpace = new PinyinSyllableSplitter(" ");
+        document.getElementById('syllables-space').textContent =
+            splitterSpace.splitWords(text);
+
+        // Example 2: default spacing character
+        const splitterDefault = new PinyinSyllableSplitter();
+        document.getElementById('syllables-default').textContent =
+            splitterDefault.splitWords(text);
+
+        // Example 3: one word
+        const splitterWord = new PinyinSyllableSplitter();
+        document.getElementById('syllables-word').textContent =
+            splitterWord.splitWords("wèishénme");
+
+        // Morphemes
+        document.getElementById('morphemes').textContent =
+            JSON.stringify(splitterSpace.splitAndTag(text), null, 2);
+
+        // Pinyin syllables only
+        document.getElementById('pinyinSyllables').textContent =
+            JSON.stringify(splitterSpace.listSyllables(text), null, 2);
+    </script>
+</body>
+
+</html>
