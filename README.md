@@ -49,13 +49,13 @@ Rán ér, tā yǒu diǎn bù yóu zì zhǔ zài fā dǒu.
 ### Split One Word into Syllables
 
 ```javascript
-const splitter = new PinyinSyllableSplitter(" ");
+const splitter = new PinyinSyllableSplitter();
 splitter.splitWords("wèishénme");
 ```
 
 **Output:**
 ```
-wèi shén me
+wèi∙shén∙me
 ```
 
 ---
