@@ -5,7 +5,6 @@
 
 class PinyinSyllableSplitter {
     #spacingChar = '∙';
-    #text = '';
 
     /**
      * @param {string} [spacingChar='∙'] - Character to use as syllable separator
@@ -33,27 +32,6 @@ class PinyinSyllableSplitter {
      */
     getSpacingChar() {
         return this.#spacingChar;
-    }
-
-    /**
-     * Sets the text to be processed.
-     * @param {string} text - The Pinyin text to split
-     * @returns {PinyinSyllableSplitter} - Returns this instance for chaining
-     */
-    setText(text) {
-        if (typeof text !== 'string') {
-            throw new Error('Text must be a string');
-        }
-        this.#text = text;
-        return this;
-    }
-
-    /**
-     * Gets the current text.
-     * @returns {string} - The current text
-     */
-    getText() {
-        return this.#text;
     }
 
     /**
@@ -112,54 +90,51 @@ class PinyinSyllableSplitter {
     }
 
     /**
-     * Splits stored Pinyin text into syllables, joining with the spacing character.
+     * Splits provided Pinyin text into syllables, joining with the spacing character.
+     * @param {string} text - The Pinyin text to split
      * @returns {string} - Text with syllables separated by spacing character
      */
-    splitToSyllables() {
-        let text = this.#text;
-        text = this.removeAffixedApostrophes(text);
-        text = this.replaceHyphenSeparators(text);
+    splitWords(text) {
+        if (typeof text !== 'string') {
+            throw new Error('Text must be a string');
+        }
+        let processedText = text;
+        processedText = this.removeAffixedApostrophes(processedText);
+        processedText = this.replaceHyphenSeparators(processedText);
 
         const wordPattern = /[\p{L}]+/gu;
-        return text.replace(wordPattern, word => {
+        return processedText.replace(wordPattern, word => {
             const syllables = this.splitIntoSyllables(word);
             return syllables.join(this.#spacingChar);
         });
     }
 
     /**
-     * Splits a provided Pinyin text into syllables (alternative to setting text first).
-     * @param {string} text - The Pinyin text to split
-     * @returns {string} - Text with syllables separated by spacing character
+     * Segments provided Pinyin text into syllables (syllables as "X", punctuation as "PU").
+     * @param {string} text - The Pinyin text to syllable
+     * @returns {Array<{syllable: string, tag: string}>} - Array of syllable objects
      */
-    splitPinyin(text) {
-        return this.setText(text).splitToSyllables();
-    }
-
-    /**
-     * Segments stored Pinyin text into morphemes (syllables as "MO", punctuation as "PU").
-     * @returns {Array<{segment: string, type: string}>} - Array of morpheme objects
-     */
-    segmentToMorphemes() {
-        let text = this.#text;
-        text = this.removeAffixedApostrophes(text);
-        text = this.replaceHyphenSeparators(text);
+    splitAndTag(text) {
+        if (typeof text !== 'string') {
+            throw new Error('Text must be a string');
+        }
+        let processedText = text;
 
         const result = [];
         const wordPattern = /[\p{L}]+|[^\p{L}]/gu; // Match words or single non-letter characters
 
         let match;
-        while ((match = wordPattern.exec(text)) !== null) {
-            const segment = match[0];
-            if (/[\p{L}]+/u.test(segment)) {
-                // For words, split into syllables and label each as "MO"
-                const syllables = this.splitIntoSyllables(segment);
+        while ((match = wordPattern.exec(processedText)) !== null) {
+            const syllable = match[0];
+            if (/[\p{L}]+/u.test(syllable)) {
+                // For words, split into syllables and label each as "X"
+                const syllables = this.splitIntoSyllables(syllable);
                 syllables.forEach(syllable => {
-                    result.push({ segment: syllable, type: 'MO' });
+                    result.push({ syllable: syllable, tag: 'X' });
                 });
             } else {
                 // For non-letter characters (punctuation, spaces, etc.), label as "PU"
-                result.push({ segment, type: 'PU' });
+                result.push({ syllable, tag: 'PU' });
             }
         }
 
@@ -167,31 +142,14 @@ class PinyinSyllableSplitter {
     }
 
     /**
-     * Segments a provided Pinyin text into morphemes (alternative to setting text first).
-     * @param {string} text - The Pinyin text to segment
-     * @returns {Array<{segment: string, type: string}>} - Array of morpheme objects
-     */
-    segmentPinyinToMorphemes(text) {
-        return this.setText(text).segmentToMorphemes();
-    }
-
-    /**
-     * Returns a list of Pinyin syllables from the stored text, excluding punctuation.
-     * @returns {string[]} - Array of Pinyin syllables (MO segments only)
-     */
-    getPinyinSyllables() {
-        return this.segmentToMorphemes()
-            .filter(morpheme => morpheme.type === 'MO')
-            .map(morpheme => morpheme.segment);
-    }
-
-    /**
      * Returns a list of Pinyin syllables from provided text, excluding punctuation.
-     * @param {string} text - The Pinyin text to segment
-     * @returns {string[]} - Array of Pinyin syllables (MO segments only)
+     * @param {string} text - The Pinyin text to syllable
+     * @returns {string[]} - Array of Pinyin syllables
      */
-    getPinyinSyllablesFromText(text) {
-        return this.setText(text).getPinyinSyllables();
+    listSyllables(text) {
+        return this.splitAndTag(text)
+            .filter(morpheme => morpheme.tag === 'X')
+            .map(morpheme => morpheme.syllable);
     }
 }
 
