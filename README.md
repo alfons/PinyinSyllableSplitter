@@ -7,10 +7,11 @@ Licensed under the MIT License.
 # Usage and Output
 
 ## Example Text Analysis
-I transcribed 60% of the novel 天人 by 倪匡 with adherence to the »Basic Rules of Hanyu Pinyin Orthography (GB/T 16159–2012)« 《汉语拼音正词法基本规则》 (GB/T 16159–2012), and used that as input for syllable splitting and counting:
+I transcribed 60% of the novel 天人 by 倪匡 with adherence to the »Basic Rules of Hanyu Pinyin Orthography (GB/T 16159–2012)« 《汉语拼音正词法基本规则》 (GB/T 16159–2012), and used that as input for syllable splitting and counting, in syllable_splitter_with_counter.html:
 
 !["Sylable Count"](tianren_syllable_split.jpg)
 
+Note: Attached aspect particles le, zhe, guo are not counted towards syllable length. For example, "yǒu∙zhe", although two syllables, will be counted as a monosyllabic word.
 
 ## Example Text
 
