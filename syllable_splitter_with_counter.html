@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Avenir Next", Arial, sans-serif;
+            font-size: 16px;
+            padding-top: 20px;
+            background-color: #fcfcfc;
+            color: #000;
+        }
+
+        /* Night mode styles */
+        body.night {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        body.night textarea {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            border: 1px solid #444;
+        }
+
+        body.night .pill.active {
+            background-color: #4caf50;
+        }
+
+        body.night .pill.inactive {
+            background-color: #333;
+            color: #aaa;
+        }
+
+        body.night .toggle-button {
+            background-color: #2196f3;
+            color: #fff;
+        }
+
+        body.night .toggle-button:hover:not(:disabled) {
+            background-color: #1976d2;
+        }
+
+        body.night .toggle-button:disabled {
+            background-color: #555;
+            color: #888;
+        }
+
+        body.night .spacing-char-input {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            border: 1px solid #444;
+        }
+
+        body.night .copyright a {
+            color: #aaa;
+        }
+
+        .middle-column {
+            width: 60%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .description {
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            font-family: Menlo, 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            font-size: 16px;
+            padding: 10px;
+            white-space: pre-wrap;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .pill {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            transition: background-color 0.3s, color 0.3s;
+            white-space: nowrap;
+        }
+
+        .pill.active {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .pill.inactive {
+            background-color: #e9ecef;
+            color: #6c757d;
+        }
+
+        .controls {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-button {
+            padding: 5px 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .toggle-button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+
+        .toggle-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            color: #666;
+        }
+
+        .spacing-char-input {
+            width: 40px;
+            font-size: 14px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .spacing-char-label {
+            font-size: 14px;
+        }
+
+        .copyright {
+            padding-top: 20px;
+            text-decoration: none;
+            color: gray;
+            font-size: 12px;
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .bar {
+            height: 20px;
+            background-color: #4a90e2;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+
+        .graph-container {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .graph-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+    <title>Hànyǔ Pīnyīn Syllable Split by Alfons Grabher</title>
+</head>
+
+<body>
+    <div class="middle-column">
+        <h1>Hànyǔ Pīnyīn Syllable Split</h1>
+        <div class="description">Paste your Hànyǔ Pīnyīn text into the textarea below.</div>
+        <textarea id="input" placeholder="Drop Hànyǔ Pīnyīn here..."></textarea>
+        <div class="controls">
+            <button id="toggleButton" class="toggle-button" disabled>Show Original</button>
+            <div id="pill" class="pill inactive">Waiting for words</div>
+            <label class="spacing-char-label">Spacing char:</label>
+            <input id="spacingCharInput" class="spacing-char-input" value="∙" maxlength="1">
+        </div>
+        <div class="graph-container">
+            <div class="graph-title">How Many Syllables per Word?</div>
+            <div class="description">Each bar represents the proportion of words with a given number of syllables.</div>
+            <div id="syllableGraph"></div>
+        </div>
+        <div class="copyright">
+            <a href="https://alfonsgrabher.com" class="copyright">© 2025 Alfons Grabher</a>
+        </div>
+    </div>
+
+    <script src="PinyinSyllableSplitter.js"></script>
+    <script>
+        const input = document.getElementById('input');
+        const pill = document.getElementById('pill');
+        const toggleButton = document.getElementById('toggleButton');
+        const spacingCharInput = document.getElementById('spacingCharInput');
+
+        // Initialize the PinyinSyllableSplitter with default spacing character
+        let splitter;
+        try {
+            splitter = new PinyinSyllableSplitter(spacingCharInput.value);
+        } catch (e) {
+            //console.error('Error initializing PinyinSyllableSplitter:', e);
+            splitter = new PinyinSyllableSplitter('∙'); // Fallback to default
+        }
+
+        // Store the original and split text
+        let originalText = '';
+        let splitText = '';
+        let isSplitView = true;
+
+
+
+        function countSyllables() {
+            try {
+                return splitter.listSyllables(splitText).length;
+            } catch (e) {
+                //console.error('Error counting syllables:', e);
+                return 0;
+            }
+        }
+
+        function updatePill() {
+            const syllableCount = countSyllables();
+            if (syllableCount > 0 || input.value.length > 0) {
+                pill.textContent = `${syllableCount} syllable${syllableCount === 1 ? '' : 's'} in total`;
+                pill.classList.remove('inactive');
+                pill.classList.add('active');
+            } else {
+                pill.textContent = 'Waiting for words';
+                pill.classList.remove('active');
+                pill.classList.add('inactive');
+            }
+        }
+
+        function countSyllablesPerWord(text) {
+            const ignoreAspectMarkers = true;
+            const counts = { '1': 0, '2': 0, '3': 0, '4': 0, '4+': 0 };
+            if (!text.trim()) return counts;
+
+            const words = text.split(/\s+/).filter(word => word.trim());
+            words.forEach(word => {
+                try {
+                    const syllables = splitter.listSyllables(word);
+                    const syllableCount = syllables.length;
+                    if (syllableCount > 0) { // Explicitly skip 0-syllable words
+                        if (ignoreAspectMarkers && syllableCount > 1) {
+                            const lastSyllable = syllables[syllables.length - 1].toLowerCase();
+                            if (['le', 'zhe', 'guo'].includes(lastSyllable)) {
+                                syllableCount--; // Exclude aspect marker
+                            }
+                        }
+                        const key = syllableCount <= 4 ? syllableCount.toString() : '4+';
+                        counts[key]++;
+                    }
+                } catch (e) {
+                    //console.error('Error counting syllables for word:', word, e);
+                }
+            });
+            //console.log('syllableCounts:', counts); // Debugging
+            return counts;
+        }
+
+        function renderBars(counts, containerId) {
+            const total = (counts['1'] || 0) + (counts['2'] || 0) + (counts['3'] || 0) + (counts['4'] || 0) + (counts['4+'] || 0) || 1;
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            for (const key of ['1', '2', '3', '4', '4+']) {
+                const val = counts[key] || 0;
+                const perc = parseFloat(((val / total) * 100).toFixed(1)) || 0;
+
+                const barContainer = document.createElement('div');
+                barContainer.className = 'bar-container';
+
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.width = `${perc}%`;
+
+                const label = document.createElement('span');
+                //label.textContent = `${key}-syllable: ${val.toLocaleString()} (${perc}%)`;
+                label.textContent = `${key}-syllable word${val === 1 ? '' : 's'}: ${val.toLocaleString()} (${perc}%)`;
+
+                barContainer.appendChild(bar);
+                barContainer.appendChild(label);
+                container.appendChild(barContainer);
+            }
+        }
+
+        function updateTextArea() {
+            input.value = isSplitView ? splitText : originalText;
+            toggleButton.disabled = !originalText.trim();
+            updatePill();
+            const syllableCounts = countSyllablesPerWord(originalText);
+            //console.log('syllableCounts:', syllableCounts); // Debugging
+            renderBars(syllableCounts, 'syllableGraph');
+        }
+
+        // Handle text input
+        input.addEventListener('input', function () {
+            originalText = this.value;
+            try {
+                splitText = splitter.splitWords(originalText);
+                //console.log('Original:', originalText, 'Split:', splitText); // Debugging
+            } catch (e) {
+                //console.error('Error splitting text:', e);
+                splitText = originalText;
+            }
+            updateTextArea();
+        });
+
+        // Handle toggle button
+        toggleButton.addEventListener('click', function () {
+            isSplitView = !isSplitView;
+            toggleButton.textContent = isSplitView ? 'Show Original' : 'Show Split';
+            updateTextArea();
+        });
+
+        // Handle spacing character input
+        spacingCharInput.addEventListener('input', function () {
+            const newChar = this.value.charAt(0) || '∙';
+            try {
+                splitter.setSpacingChar(newChar);
+                splitText = splitter.splitWords(originalText);
+                //console.log('New spacing char:', newChar, 'Split:', splitText); // Debugging
+                updateTextArea();
+            } catch (e) {
+                //console.error('Error updating spacing char:', e);
+                this.value = splitter.getSpacingChar(); // Revert to previous valid char
+            }
+        });
+
+        // Initialize pill and graph
+        updatePill();
+        renderBars({ 1: 0, 2: 0, 3: 0, 4: 0, '4+': 0 }, 'syllableGraph');
+    </script>
+</body>
+
+</html>
