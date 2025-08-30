@@ -2,7 +2,7 @@
 
 A JavaScript class to split Hànyǔ Pīnyīn text into syllables, by Alfons Grabher.
 
-Licensed under the MIT License.
+PinyinSyllableSplitter.js licensed under the MIT License.
 
 # Usage and Output
 
