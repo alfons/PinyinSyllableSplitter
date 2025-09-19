@@ -7,7 +7,6 @@
  */
 function splitPinyin(text) {
     if (!text) return [text];
-    text = text.replace(/[\s-\d]/g, '')
 
     const allVowels = 'aāáǎăàeēéěĕèiīíǐĭìoōóǒŏòuūúǔŭùüǖǘǚǜü̆ǜ';
     const spacingChar = '∙';
